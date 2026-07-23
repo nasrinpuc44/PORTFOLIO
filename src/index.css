@@ -1,0 +1,194 @@
+@import "tailwindcss";
+@plugin "daisyui";
+/* =========================================
+   GLITCH IMAGE EFFECT
+========================================= */
+
+.glitch-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  isolation: isolate;
+}
+
+.glitch-image {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.glitch-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  pointer-events: none;
+  opacity: 0;
+  object-fit: cover;
+}
+
+.glitch-red {
+  mix-blend-mode: screen;
+}
+
+.glitch-blue {
+  mix-blend-mode: screen;
+}
+
+/* =========================================
+   ACTIVE GLITCH
+========================================= */
+
+.glitch-active .glitch-image {
+  animation: main-glitch 0.25s infinite;
+}
+
+.glitch-active .glitch-red {
+  opacity: 0.65;
+  animation: glitch-red 0.3s infinite steps(2);
+}
+
+.glitch-active .glitch-blue {
+  opacity: 0.65;
+  animation: glitch-blue 0.25s infinite steps(2);
+}
+
+/* =========================================
+   SCANLINES
+========================================= */
+
+.glitch-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(255, 255, 255, 0.12) 4px
+  );
+}
+
+.glitch-active .glitch-scanlines {
+  opacity: 0.5;
+  animation: scanline-move 0.15s linear infinite;
+}
+
+/* =========================================
+   MAIN GLITCH
+========================================= */
+
+@keyframes main-glitch {
+  0% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-2px, 1px);
+  }
+
+  40% {
+    transform: translate(2px, -1px);
+  }
+
+  60% {
+    transform: translate(-1px, 2px);
+  }
+
+  80% {
+    transform: translate(1px, -2px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
+
+/* =========================================
+   RED RGB CHANNEL
+========================================= */
+
+@keyframes glitch-red {
+  0% {
+    transform: translate(0);
+    clip-path: inset(10% 0 70% 0);
+  }
+
+  20% {
+    transform: translate(-8px, 2px);
+    clip-path: inset(40% 0 30% 0);
+  }
+
+  40% {
+    transform: translate(6px, -2px);
+    clip-path: inset(70% 0 10% 0);
+  }
+
+  60% {
+    transform: translate(-5px, 1px);
+    clip-path: inset(20% 0 50% 0);
+  }
+
+  80% {
+    transform: translate(8px, -1px);
+    clip-path: inset(60% 0 20% 0);
+  }
+
+  100% {
+    transform: translate(0);
+    clip-path: inset(10% 0 70% 0);
+  }
+}
+
+/* =========================================
+   BLUE RGB CHANNEL
+========================================= */
+
+@keyframes glitch-blue {
+  0% {
+    transform: translate(0);
+    clip-path: inset(70% 0 10% 0);
+  }
+
+  20% {
+    transform: translate(8px, -2px);
+    clip-path: inset(20% 0 50% 0);
+  }
+
+  40% {
+    transform: translate(-6px, 2px);
+    clip-path: inset(10% 0 70% 0);
+  }
+
+  60% {
+    transform: translate(5px, -1px);
+    clip-path: inset(50% 0 20% 0);
+  }
+
+  80% {
+    transform: translate(-8px, 1px);
+    clip-path: inset(30% 0 40% 0);
+  }
+
+  100% {
+    transform: translate(0);
+    clip-path: inset(70% 0 10% 0);
+  }
+}
+
+/* =========================================
+   MOVING SCANLINES
+========================================= */
+
+@keyframes scanline-move {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 10px;
+  }
+}
