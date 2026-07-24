@@ -21,6 +21,7 @@ const navItems = [
         <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
       </svg>
     ),
+    sectionId: "projects",
   },
   {
     label: "Services",
@@ -30,6 +31,7 @@ const navItems = [
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.36.36.68.64.94.28.26.6.46.96.6H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
       </svg>
     ),
+    sectionId: "services",
   },
   {
     label: "Resume",
@@ -39,6 +41,7 @@ const navItems = [
         <path d="M14 2v6h6" />
       </svg>
     ),
+    sectionId: "resume",
   },
   {
     label: "Skills",
@@ -48,6 +51,7 @@ const navItems = [
         <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
       </svg>
     ),
+    sectionId: "skills",
   },
   {
     label: "Contact",
@@ -57,33 +61,56 @@ const navItems = [
         <path d="M22 2 15 22l-4-9-9-4 20-7z" />
       </svg>
     ),
+    sectionId: "contact",
   },
 ];
 
 const Home = () => {
   const [activeNav, setActiveNav] = useState("Projects");
 
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Offset for the fixed navigation height
+      const navHeight = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleNavClick = (label, sectionId) => {
+    setActiveNav(label);
+    scrollToSection(sectionId);
+  };
+
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#0e0f0f]">
+    <main className="relative min-h-screen overflow-hidden bg-[#0e0f0f]">
+      {/* Animated background */}
       <AnimatedBackground />
 
+      {/* Background lighting */}
       <div className="pointer-events-none absolute inset-0 z-[2]">
         <div className="absolute left-[-120px] top-[-100px] h-[350px] w-[350px] rounded-full bg-yellow-500/10 blur-[100px]" />
         <div className="absolute bottom-[-120px] right-[-100px] h-[400px] w-[400px] rounded-full bg-yellow-400/10 blur-[120px]" />
       </div>
 
-      {/* Main container - এখানে h-screen ব্যবহার করা হয়েছে */}
-      <div className="relative z-10 mx-auto max-w-7xl px-6 py-12 lg:py-16">
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
-          
-          {/* Left Sidebar - Sticky with viewport height */}
-          <div className="lg:w-[360px] lg:shrink-0 lg:sticky lg:top-6 lg:self-start lg:h-[calc(100vh-3rem)] lg:overflow-y-auto">
-            <Sidebar />
-          </div>
+      {/* Content - Flex layout with fixed sidebar */}
+      <div className="relative z-10 flex min-h-screen">
+        {/* Fixed Sidebar */}
+        <div className="fixed left-0 top-0 h-screen w-[360px] p-6 lg:p-8">
+          <Sidebar />
+        </div>
 
-          {/* Right Content */}
-          <div className="flex-1 min-w-0">
-            <nav className="flex flex-wrap items-center gap-2">
+        {/* Scrollable Content Area */}
+        <div className="ml-[360px] flex-1 px-6 py-8 lg:px-12 lg:py-12">
+          {/* Fixed Navigation Buttons - Always visible at top */}
+          <div className="fixed-nav-container">
+            <nav className="fixed top-0 z-30 flex flex-wrap items-center gap-2 bg-[#0e0f0f]/80 backdrop-blur-sm px-6 py-4 lg:px-12" style={{ left: '360px', right: '0' }}>
               {navItems.map((item) => {
                 const isActive = activeNav === item.label;
 
@@ -91,7 +118,7 @@ const Home = () => {
                   <button
                     key={item.label}
                     type="button"
-                    onClick={() => setActiveNav(item.label)}
+                    onClick={() => handleNavClick(item.label, item.sectionId)}
                     className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
                       isActive
                         ? "border-yellow-400/60 bg-yellow-400/10 text-yellow-400"
@@ -104,8 +131,12 @@ const Home = () => {
                 );
               })}
             </nav>
+          </div>
 
-            <div className="mt-14 max-w-3xl">
+          {/* Main Content Sections - Add padding top to account for fixed nav */}
+          <div className="mt-20">
+            {/* Hero Section */}
+            <div className="max-w-3xl">
               <p className="text-lg text-gray-300">
                 Hello, I'm <span className="font-semibold text-yellow-400">Nasrin Sultana</span>
               </p>
@@ -119,6 +150,7 @@ const Home = () => {
               </h1>
             </div>
 
+            {/* Stats */}
             <div className="mt-16 flex flex-wrap gap-x-16 gap-y-8">
               {stats.map((stat) => (
                 <div key={stat.label}>
@@ -132,20 +164,42 @@ const Home = () => {
               ))}
             </div>
 
+            {/* About */}
             <div className="mt-16 max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-yellow-400">
                 About Me
               </p>
               <p className="mt-4 text-base leading-8 text-gray-300 sm:text-lg">
-                I am a Computer Science and Engineering (CSE) student at Premier University, Chattogram, with a strong passion for web development and modern technologies. I enjoy transforming ideas into responsive, user-friendly, and visually engaging web experiences using React, JavaScript, and modern development tools. Currently, I am expanding my expertise in Full Stack Web Development through hands-on projects and continuous learning. My goal is to build impactful digital solutions, grow as a software engineer, and contribute to innovative products that solve real-world problems.
+                I am a Computer Science and Engineering (CSE) student at Premier University, Chattogram, with a strong passion for web development and modern technologies. I enjoy transforming ideas into responsive, user-friendly, and visually engaging web experiences using React, JavaScript, and modern development tools.
+                <br /><br />
+                Currently, I am expanding my expertise in Full Stack Web Development through hands-on projects and continuous learning. My goal is to build impactful digital solutions, grow as a software engineer, and contribute to innovative products that solve real-world problems.
               </p>
             </div>
 
-            <Projects />
-            <Services />
-            <Resume />
-            <Skills />
-            <Contact />
+            {/* Projects */}
+            <div id="projects">
+              <Projects />
+            </div>
+
+            {/* Services */}
+            <div id="services">
+              <Services />
+            </div>
+
+            {/* Resume */}
+            <div id="resume">
+              <Resume />
+            </div>
+
+            {/* Skills */}
+            <div id="skills">
+              <Skills />
+            </div>
+
+            {/* Contact */}
+            <div id="contact">
+              <Contact />
+            </div>
           </div>
         </div>
       </div>

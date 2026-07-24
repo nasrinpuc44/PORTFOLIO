@@ -1,6 +1,4 @@
-import React, { useState } from "react";
-
-const menuItems = ["menu 1", "menu 2", "menu 3", "menu 4"];
+import React, { useState, useEffect } from "react";
 
 const socialLinks = [
   {
@@ -37,115 +35,128 @@ const socialLinks = [
 ];
 
 const Sidebar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isGlitchActive, setIsGlitchActive] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Check for saved theme preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    } else {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
   const handleDownloadCV = () => {
     const cvUrl = "https://drive.google.com/uc?export=download&id=1d_wdnXNP73fByPx1M2yS8Im5Bnay2VPh";
     window.open(cvUrl, "_blank");
   };
 
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
+
+  // Get current theme classes
+  const getThemeClasses = () => {
+    if (isDarkMode) {
+      return {
+        card: 'border-white/10 bg-white/[0.03]',
+        text: 'text-white',
+        subtext: 'text-gray-400',
+        button: 'bg-yellow-400 text-black hover:bg-yellow-300',
+        glitchButton: 'border-yellow-400/30 bg-yellow-400/10 text-yellow-400 hover:bg-yellow-400 hover:text-black',
+        social: 'bg-white/5 text-white/80 hover:bg-yellow-400 hover:text-black',
+      };
+    } else {
+      return {
+        card: 'border-gray-200/30 bg-white/80 backdrop-blur-sm shadow-lg',
+        text: 'text-gray-800',
+        subtext: 'text-gray-600',
+        button: 'bg-yellow-400 text-black hover:bg-yellow-300',
+        glitchButton: 'border-yellow-400/30 bg-yellow-400/10 text-yellow-400 hover:bg-yellow-400 hover:text-black',
+        social: 'bg-gray-100/80 text-gray-600 hover:bg-yellow-400 hover:text-black',
+      };
+    }
+  };
+
+  const theme = getThemeClasses();
+
   return (
-    <aside className="w-full">
+    <aside className="relative h-full w-full max-w-[360px]">
       {/* Decorative Notch */}
       <div className="absolute left-1/2 top-0 z-20 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-yellow-500/70" />
 
-      {/* Overlay */}
-      <div
-        onClick={() => setIsMenuOpen(false)}
-        className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
-          isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      />
-
-      {/* Menu Drawer */}
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-[20%] min-w-[220px] border-r border-white/10 bg-[#111212] p-6 shadow-2xl transition-transform duration-300 ease-out ${
-          isMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="mb-8 flex items-center justify-between">
-          <span className="text-sm font-semibold uppercase tracking-[0.3em] text-yellow-400">
-            Menu
-          </span>
-
-          <button
-            type="button"
-            aria-label="Close menu"
-            onClick={() => setIsMenuOpen(false)}
-            className="text-white/70 transition hover:text-yellow-400"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              className="h-5 w-5"
-            >
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
-          </button>
-        </div>
-
-        <nav className="flex flex-col gap-3">
-          {menuItems.map((item) => (
-            <button
-              key={item}
-              type="button"
-              className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-gray-200 transition hover:border-yellow-400/60 hover:bg-yellow-400/10 hover:text-yellow-400"
-            >
-              {item}
-            </button>
-          ))}
-        </nav>
-      </div>
-
       {/* Sidebar Card */}
-      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-2xl backdrop-blur-sm">
-        {/* Top Bar */}
-        <div className="mb-5 flex items-center justify-between">
+      <div className={`flex h-full flex-col overflow-hidden rounded-[28px] border ${theme.card} p-5 shadow-2xl backdrop-blur-sm transition-all duration-500`}>
+        {/* Top Bar - Only Theme Toggle */}
+        <div className="mb-5 flex items-center justify-end shrink-0">
+          {/* Theme Toggle Button - Premium Glassmorphism */}
           <button
             type="button"
-            aria-label="Menu"
-            onClick={() => setIsMenuOpen(true)}
-            className="text-white/80 transition hover:text-yellow-400"
+            onClick={toggleTheme}
+            aria-label={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="group relative flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-yellow-400/50 hover:bg-yellow-400/10 hover:shadow-lg hover:shadow-yellow-400/10"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              className="h-5 w-5"
-            >
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            </svg>
-          </button>
+            {/* Icon Container with Smooth Transition */}
+            <div className="relative h-5 w-5">
+              {/* Sun Icon - Light Mode */}
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`absolute inset-0 h-5 w-5 transition-all duration-500 ${
+                  isDarkMode 
+                    ? 'opacity-0 rotate-90 scale-50' 
+                    : 'opacity-100 rotate-0 scale-100'
+                } text-yellow-400`}
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
 
-          <button
-            type="button"
-            aria-label="Toggle theme"
-            className="text-white/80 transition hover:text-yellow-400"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-            </svg>
+              {/* Moon Icon - Dark Mode */}
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`absolute inset-0 h-5 w-5 transition-all duration-500 ${
+                  isDarkMode 
+                    ? 'opacity-100 rotate-0 scale-100' 
+                    : 'opacity-0 -rotate-90 scale-50'
+                } text-yellow-400`}
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            </div>
+
+            {/* Glowing ring effect */}
+            <span className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="absolute inset-0 rounded-full bg-yellow-400/20 blur-md" />
+            </span>
           </button>
         </div>
 
         {/* GLITCH IMAGE */}
         <div
-          className={`glitch-image-wrapper ${
+          className={`glitch-image-wrapper shrink-0 ${
             isGlitchActive ? "glitch-active" : ""
           }`}
           onMouseEnter={() => setIsGlitchActive(true)}
@@ -171,20 +182,27 @@ const Sidebar = () => {
           <div className="glitch-scanlines" />
         </div>
 
+        {/* Glitch Toggle Button */}
         <button
           type="button"
           onClick={() => setIsGlitchActive(!isGlitchActive)}
-          className="mt-3 w-full rounded-xl border border-yellow-400/30 bg-yellow-400/10 py-2 text-sm font-medium text-yellow-400 transition hover:bg-yellow-400 hover:text-black"
+          className={`mt-3 w-full shrink-0 rounded-xl border ${theme.glitchButton} py-2 text-sm font-medium transition-all duration-300`}
         >
           {isGlitchActive ? "Disable Glitch" : "Enable Glitch"}
         </button>
 
-        <div className="mt-5 text-center">
-          <h2 className="text-xl font-bold text-white">Nasrin Sultana</h2>
-          <p className="mt-1 text-sm text-gray-400">Web Developer</p>
+        {/* Name */}
+        <div className="mt-5 text-center shrink-0">
+          <h2 className={`text-xl font-bold ${theme.text} transition-colors duration-300`}>
+            Nasrin Sultana
+          </h2>
+          <p className={`mt-1 text-sm ${theme.subtext} transition-colors duration-300`}>
+            Web Developer
+          </p>
         </div>
 
-        <div className="mt-5 flex items-center justify-center gap-3">
+        {/* Social Links */}
+        <div className="mt-5 flex items-center justify-center gap-3 shrink-0">
           {socialLinks.map((social) => (
             <a
               key={social.name}
@@ -192,17 +210,18 @@ const Sidebar = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={social.name}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white/80 transition hover:bg-yellow-400 hover:text-black"
+              className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.social} transition-all duration-300`}
             >
               {social.icon}
             </a>
           ))}
         </div>
 
+        {/* Download CV Button */}
         <button
           type="button"
           onClick={handleDownloadCV}
-          className="mt-6 w-full rounded-xl bg-yellow-400 py-3 text-sm font-semibold text-black transition hover:bg-yellow-300 hover:scale-[1.02] active:scale-[0.98]"
+          className={`mt-6 w-full shrink-0 rounded-xl ${theme.button} py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`}
         >
           Download CV
         </button>
